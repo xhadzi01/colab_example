@@ -1,6 +1,17 @@
-from ubuntu:20.04
+from alpine:3.14
 
-run apt-get update && apt-get upgrade && apt-get dist-upgrade
-run apt-get install python3.8
+# grep MAC address
+RUN ifconfig | grep -i hwaddr
 
-ENTRYPOINT ["python"]
+ENV PYTHONUNBUFFERED=1
+RUN apk add --update --no-cache python3 && ln -sf python3 /usr/bin/python
+RUN python3 -m ensurepip
+RUN pip3 install --no-cache --upgrade pip setuptools
+RUN pip3 install --no-cache --upgrade pip beautifulsoup4
+
+RUN mkdir /Proj
+WORKDIR /Proj
+COPY *.py /Proj/
+RUN chmod a+x main.py
+
+ENTRYPOINT ["python", "./main.py"]
